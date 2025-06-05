@@ -1,0 +1,2 @@
+﻿## GamplayTags
+GamplayTags, like Unreal.

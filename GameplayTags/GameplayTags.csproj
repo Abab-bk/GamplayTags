@@ -12,6 +12,13 @@
         <Authors>Flower</Authors>
         <Company>Flowerfication</Company>
         <PackageTags>GameDev;GameplayTags;Tags</PackageTags>
+        <PackageReadmeFile>README.MD</PackageReadmeFile>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <RepositoryUrl>https://github.com/Abab-bk/GamplayTags</RepositoryUrl>
     </PropertyGroup>
 
+    <ItemGroup>
+        <None Include="README.MD" Pack="true" PackagePath=""/>
+    </ItemGroup>
+    
 </Project>
