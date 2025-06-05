@@ -1,0 +1,2 @@
+## GameplayTags
+Copy from Unreal.
