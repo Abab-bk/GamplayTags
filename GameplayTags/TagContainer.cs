@@ -1,20 +1,59 @@
-﻿namespace Flowerfication.GameplayTags;
+﻿using System.Runtime.InteropServices;
+
+namespace Flowerfication.GameplayTags;
 
 public class TagContainer
 {
-    private HashSet<int> TagHashes { get; } = [];
+    private Dictionary<int, int> Tags { get; } = new();
 
-    public void AddTag(Tag tag) => TagHashes.Add(tag.Hash);
-    public void RemoveTag(Tag tag) => TagHashes.Remove(tag.Hash);
+    public void AddTag(Tag tag, int count = 1)
+    {
+        if (count <= 0) return;
+        
+        ref var currentCount = ref CollectionsMarshal.GetValueRefOrAddDefault(
+            Tags, tag.Hash, out bool exists
+        );
+        currentCount = (exists ? currentCount : 0) + count;
+    }
     
-    public bool HasTag(Tag tag) => TagHashes.Contains(tag.Hash);
-    public bool HasAllTags(TagContainer other) => TagHashes.IsSupersetOf(other.TagHashes);
-    public bool HasAnyTag(TagContainer other) => TagHashes.Overlaps(other.TagHashes);
+    public int RemoveTag(Tag tag, int count = 1)
+    {
+        if (count <= 0) return 0;
+        if (!Tags.TryGetValue(tag.Hash, out var currentCount)) return 0;
+        
+        var actualRemove = Math.Min(count, currentCount);
+        var newCount = currentCount - actualRemove;
+    
+        if (newCount > 0)
+        {
+            Tags[tag.Hash] = newCount;
+        }
+        else
+        {
+            Tags.Remove(tag.Hash);
+        }
+    
+        return actualRemove;
+    }
+    
+    public int RemoveTagCompletely(Tag tag) =>
+        Tags.Remove(tag.Hash, out var currentCount) ? currentCount : 0;
+    
+    public bool HasTag(Tag tag) => Tags.ContainsKey(tag.Hash);
+    
+    public int GetTagCount(Tag tag) => Tags.GetValueOrDefault(tag.Hash, 0);
+    
+    public bool HasAllTags(TagContainer other) => 
+        other.Tags.Keys.All(Tags.ContainsKey);
+    
+    public bool HasAnyTag(TagContainer other) => 
+        other.Tags.Keys.Any(Tags.ContainsKey);
     
     public override string ToString() => string.Join(", ",
-        TagHashes
-            .Where(tagHash => TagManager.GetTag(tagHash, out _))
-            .Select(TagManager.GetTagPathByHash)
+        Tags.Select(pair => 
+            $"{TagManager.GetTagPathByHash(pair.Key)}" + 
+            (pair.Value > 1 ? $"({pair.Value})" : "")
+        )
     );
 
     public TagContainer()

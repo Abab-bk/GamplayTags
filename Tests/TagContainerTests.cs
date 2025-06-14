@@ -40,4 +40,30 @@ public class TagContainerTests
         Assert.That(container.ToString(),
             Is.EqualTo("Ability.Fire.Fireball, Ability.Fire.Firebolt"));
     }
+    
+    [Test]
+    public void AddTag_WithPositiveCount()
+    {
+        var container = new TagContainer([_fireBall, _fireBolt]);
+        container.AddTag(_fireBall, 2);
+        
+        Assert.That(container.GetTagCount(_fireBall), Is.EqualTo(3));
+    }
+
+    [Test]
+    public void RemoveTag_NonExistingTag_ReturnsZeroAndNoChanges()
+    {
+        var container = new TagContainer();
+        var removed = container.RemoveTag(_fireBolt, 2);
+        Assert.That(removed, Is.EqualTo(0));
+    }
+
+    [Test]
+    public void RemoveTag_WithPositiveCount()
+    {
+        var container = new TagContainer([_fireBall]);
+        container.RemoveTag(_fireBall, 2);
+        
+        Assert.That(container.GetTagCount(_fireBall), Is.EqualTo(0));
+    }
 }
