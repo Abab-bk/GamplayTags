@@ -1,19 +1,24 @@
-﻿using System.Runtime.InteropServices;
-
-namespace Flowerfication.GameplayTags;
+﻿namespace Flowerfication.GameplayTags;
 
 public class TagContainer
 {
     private Dictionary<int, int> Tags { get; } = new();
 
+    public TagContainer(TagContainer other)
+    {
+        Tags = new Dictionary<int, int>(other.Tags);
+    }
+    
     public void AddTag(Tag tag, int count = 1)
     {
         if (count <= 0) return;
-        
-        ref var currentCount = ref CollectionsMarshal.GetValueRefOrAddDefault(
-            Tags, tag.Hash, out bool exists
-        );
-        currentCount = (exists ? currentCount : 0) + count;
+
+        if (Tags.TryGetValue(tag.Hash, out var currentCount))
+        {
+            Tags[tag.Hash] = currentCount + count;
+            return;
+        }
+        Tags.Add(tag.Hash, count);
     }
     
     public int RemoveTag(Tag tag, int count = 1)
