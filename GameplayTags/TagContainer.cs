@@ -41,6 +41,8 @@ public class TagContainer
         return actualRemove;
     }
     
+    public Dictionary<int, int> GetAllTags() => Tags;
+    
     public int RemoveTagCompletely(Tag tag) =>
         Tags.Remove(tag.Hash, out var currentCount) ? currentCount : 0;
     
